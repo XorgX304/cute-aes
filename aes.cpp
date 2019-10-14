@@ -36,21 +36,76 @@ CuteAES::CuteAES(aes_mode_t _aes_mode, crypt_mode_t _crypt_mode)
 QByteArray CuteAES::Encrypt(QByteArray &text, QByteArray &key)
 {
     CuteAES aes(AES_128_MODE, ECB_MODE);
-    return aes.encrypt(text, key);
+    return aes.encrypt(text, key, nullptr);
 }
 
 QByteArray CuteAES::Decrypt(QByteArray &text, QByteArray &key)
 {
     CuteAES aes(AES_128_MODE, ECB_MODE);
-    return aes.decrypt(text, key);
+    return aes.decrypt(text, key, nullptr);
 }
 
-QByteArray CuteAES::encrypt(QByteArray &text, QByteArray &key)
+QByteArray CuteAES::encrypt(QByteArray &text, QByteArray &key, const QByteArray &iv)
+{
+    if (text == nullptr or key == nullptr)
+        return nullptr;
+
+    QByteArray ret;
+    QByteArray expanded_key = expandKey(key);
+    QByteArray aligned_text = alignText(text);
+
+    switch (crypt_mode) {
+        case (ECB_MODE):
+            for (int i = 0; i < aligned_text.size(); i += blocklen)
+                ret.append(cipher(expanded_key, aligned_text.mid(i, blocklen)));
+
+            break;
+
+        default:
+            return nullptr;
+    }
+
+    return ret;
+}
+
+QByteArray CuteAES::decrypt(QByteArray &text, QByteArray &key, const QByteArray &iv)
+{
+    if (text == nullptr or key == nullptr)
+        return nullptr;
+
+    QByteArray ret;
+    QByteArray expanded_key = expandKey(key);
+
+    switch (crypt_mode) {
+        case (ECB_MODE):
+            for (int i = 0; i < text.size(); i += blocklen)
+                ret.append(cipher(expanded_key, text.mid(i, blocklen)));
+
+            break;
+
+        default:
+            return nullptr;
+    }
+
+    return ret;
+}
+
+QByteArray CuteAES::expandKey(QByteArray &key)
 {
     return nullptr;
 }
 
-QByteArray CuteAES::decrypt(QByteArray &text, QByteArray &key)
+QByteArray CuteAES::alignText(QByteArray &text)
+{
+    return nullptr;
+}
+
+QByteArray CuteAES::cipher(QByteArray &ext_key, const QByteArray &in)
+{
+    return nullptr;
+}
+
+QByteArray CuteAES::decipher(QByteArray &ext_key, const QByteArray &in)
 {
     return nullptr;
 }
