@@ -182,7 +182,28 @@ void CuteAES::subBytes(QByteArray *state)
 
 void CuteAES::shiftRows(QByteArray *state)
 {
-    return;
+    QByteArray::iterator iter = state->begin();
+    qint8 temp;
+
+    temp     = iter[1];
+    iter[1]  = iter[5];
+    iter[5]  = iter[9];
+    iter[9]  = iter[13];
+    iter[13] = temp;
+
+    temp     = iter[2];
+    iter[2]  = iter[10];
+    iter[10] = temp;
+
+    temp     = iter[6];
+    iter[6]  = iter[14];
+    iter[14] = temp;
+
+    temp     = iter[3];
+    iter[3]  = iter[15];
+    iter[15] = iter[11];
+    iter[11] = iter[7];
+    iter[7]  = temp;
 }
 
 void CuteAES::mixColumns(QByteArray *state)
