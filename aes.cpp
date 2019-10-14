@@ -160,7 +160,13 @@ QByteArray CuteAES::decipher(QByteArray &ext_key, const QByteArray &in)
 
 void CuteAES::addRoundKey(QByteArray *state, quint8 round, QByteArray ext_key)
 {
-    return;
+    QByteArray::iterator iter = state->begin();
+
+    for (int i = 0; i < 16; i++) {
+        iter[i] = static_cast<qint8>(iter[i]) ^ static_cast<qint8>(ext_key[
+            round * nb * 4 + (i / 4) * nb + (i % 4)
+        ]);
+    }
 }
 
 void CuteAES::subBytes(QByteArray *state)
