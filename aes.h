@@ -29,6 +29,8 @@ private:
 public:
     Q_OBJECT
 
+    CuteAES(aes_mode_t _aes_mode, crypt_mode_t _crypt_mode);
+
     static QByteArray Encrypt(QByteArray &text, QByteArray &key);
     static QByteArray Decrypt(QByteArray &text, QByteArray &key);
 
