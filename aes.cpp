@@ -92,7 +92,39 @@ QByteArray CuteAES::decrypt(QByteArray &text, QByteArray &key, const QByteArray 
 
 QByteArray CuteAES::expandKey(QByteArray &key)
 {
-    return nullptr;
+    quint8 temp[4];
+    QByteArray roundKey(key);
+
+    for (int i = aes_info.nk; i < nb * (aes_info.nr + 1); i++) {
+        for (int j = 0; j < 4; j++) {
+            temp[j] = static_cast<quint8>(roundKey[(i - 1) * 4 + j]);
+        }
+
+        if (i % aes_info.nk) {
+            quint8 local = temp[0];
+
+            // Rotate word
+            temp[0] = temp[1];
+            temp[1] = temp[2];
+            temp[2] = temp[3];
+            temp[3] = local;
+
+            // Substitute word
+            for (int j = 0; j < 4; j++) {
+                temp[j] = getSboxValue(temp[j]);
+            }
+
+            temp[0] ^= Rcon[i / aes_info.nk];
+        }
+
+        for (int j = 0; j < 4; j++) {
+            roundKey.append(i * 4 + j, static_cast<qint8>(
+                roundKey[(i - aes_info.nk) * 4 + j] ^ temp[j])
+            );
+        }
+    }
+
+    return roundKey;
 }
 
 void CuteAES::alignText(QByteArray &text)
