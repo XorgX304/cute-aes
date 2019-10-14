@@ -133,12 +133,47 @@ void CuteAES::alignText(QByteArray &text)
     text.append(QByteArray(size, 0));
 }
 
-QByteArray CuteAES::cipher(QByteArray &ext_key, const QByteArray &in)
+QByteArray CuteAES::cipher(QByteArray &ext_key, const QByteArray &input)
 {
-    return nullptr;
+    QByteArray output(input);
+
+    addRoundKey(&output, 0, ext_key);
+
+    for (quint8 round = 1; round < aes_info.nr; round++) {
+        subBytes(&output);
+        shiftRows(&output);
+        mixColumns(&output);
+        addRoundKey(&output, round, ext_key);
+    }
+
+    subBytes(&output);
+    shiftRows(&output);
+    addRoundKey(&output, aes_info.nr, ext_key);
+
+    return output;
 }
 
 QByteArray CuteAES::decipher(QByteArray &ext_key, const QByteArray &in)
 {
     return nullptr;
+}
+
+void CuteAES::addRoundKey(QByteArray *state, quint8 round, QByteArray ext_key)
+{
+    return;
+}
+
+void CuteAES::subBytes(QByteArray *state)
+{
+    return;
+}
+
+void CuteAES::shiftRows(QByteArray *state)
+{
+    return;
+}
+
+void CuteAES::mixColumns(QByteArray *state)
+{
+    return;
 }

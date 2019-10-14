@@ -46,7 +46,12 @@ private:
 
     QByteArray expandKey(QByteArray &key);
     void alignText(QByteArray &text);
-    QByteArray cipher(QByteArray &ext_key, const QByteArray &in);
+    void addRoundKey(QByteArray *state, quint8 round, QByteArray ext_key);
+    void subBytes(QByteArray *state);
+    void shiftRows(QByteArray *state);
+    void mixColumns(QByteArray *state);
+
+    QByteArray cipher(QByteArray &ext_key, const QByteArray &input);
     QByteArray decipher(QByteArray &ext_key, const QByteArray &in);
 
     const quint8 sbox[256] = {
