@@ -52,12 +52,12 @@ QByteArray CuteAES::encrypt(QByteArray &text, QByteArray &key, const QByteArray 
 
     QByteArray ret;
     QByteArray expanded_key = expandKey(key);
-    QByteArray aligned_text = alignText(text);
+    alignText(text);
 
     switch (crypt_mode) {
         case (ECB_MODE):
-            for (int i = 0; i < aligned_text.size(); i += blocklen)
-                ret.append(cipher(expanded_key, aligned_text.mid(i, blocklen)));
+            for (int i = 0; i < text.size(); i += blocklen)
+                ret.append(cipher(expanded_key, text.mid(i, blocklen)));
 
             break;
 
@@ -95,9 +95,10 @@ QByteArray CuteAES::expandKey(QByteArray &key)
     return nullptr;
 }
 
-QByteArray CuteAES::alignText(QByteArray &text)
+void CuteAES::alignText(QByteArray &text)
 {
-    return nullptr;
+    int size = (blocklen - text.size() % blocklen) % blocklen;
+    text.append(QByteArray(size, 0));
 }
 
 QByteArray CuteAES::cipher(QByteArray &ext_key, const QByteArray &in)

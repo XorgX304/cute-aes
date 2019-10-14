@@ -45,7 +45,7 @@ private:
     QByteArray decrypt(QByteArray &text, QByteArray &key, const QByteArray &iv);
 
     QByteArray expandKey(QByteArray &key);
-    QByteArray alignText(QByteArray &text);
+    void alignText(QByteArray &text);
     QByteArray cipher(QByteArray &ext_key, const QByteArray &in);
     QByteArray decipher(QByteArray &ext_key, const QByteArray &in);
 
