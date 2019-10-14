@@ -5,12 +5,38 @@
 
 class CuteAES : public QObject
 {
+private:
+    typedef struct {
+        quint8 nr;
+        quint8 nk;
+        quint8 nb;
+        quint16 key_length;
+    } aes_info_t;
+
+    typedef enum {
+        AES_128_MODE,
+        AES_192_MODE,
+        AES_256_MODE
+    } aes_mode_t;
+
+    typedef enum {
+        ECB_MODE,
+        CBC_MODE,
+        CFB_MODE,
+        OFB_MODE
+    } crypt_mode_t;
+
+public:
     Q_OBJECT
 
     static QByteArray Encrypt(QByteArray &text, QByteArray &key);
     static QByteArray Decrypt(QByteArray &text, QByteArray &key);
 
 private:
+    aes_info_t aes_info;
+    aes_mode_t aes_mode;
+    crypt_mode_t crypt_mode;
+
     const quint8 sbox[256] = {
         // 0     1     2     3     4     5    6      7     8     9     A     B     C     D     E     F
         0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
