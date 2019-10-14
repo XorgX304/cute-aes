@@ -7,6 +7,9 @@ class CuteAES : public QObject
 {
     Q_OBJECT
 
+    static QByteArray Encrypt(QByteArray &text, QByteArray &key);
+    static QByteArray Decrypt(QByteArray &text, QByteArray &key);
+
 private:
     const quint8 sbox[256] = {
         // 0     1     2     3     4     5    6      7     8     9     A     B     C     D     E     F
