@@ -6,10 +6,11 @@
 class CuteAES : public QObject
 {
 private:
+    const quint8 nb = 4;  // Number of blocks in an AES block
+
     typedef struct {
-        quint8 nr;
-        quint8 nk;
-        quint8 nb;
+        quint8 nr;  // Encryption round quantity
+        quint8 nk;  // Key length in 32-bit words
         quint16 key_length;
     } aes_info_t;
 
