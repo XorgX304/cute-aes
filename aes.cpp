@@ -171,7 +171,13 @@ void CuteAES::addRoundKey(QByteArray *state, quint8 round, QByteArray ext_key)
 
 void CuteAES::subBytes(QByteArray *state)
 {
-    return;
+    QByteArray::iterator iter = state->begin();
+
+    for (int i = 0; i < 16; i++) {
+        iter[i] = static_cast<qint8>(getSboxValue(
+            static_cast<quint8>(iter[i])
+        ));
+    }
 }
 
 void CuteAES::shiftRows(QByteArray *state)
