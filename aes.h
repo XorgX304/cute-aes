@@ -45,10 +45,14 @@ private:
     QByteArray decrypt(QByteArray &text, QByteArray &key, const QByteArray &iv);
 
     QByteArray expandKey(QByteArray &key);
-    QByteArray alignText(QByteArray &text);
-    QByteArray cipher(QByteArray &ext_key, const QByteArray &in);
-    QByteArray decipher(QByteArray &ext_key, const QByteArray &in);
+    void alignText(QByteArray &text);
+    void addRoundKey(QByteArray *state, quint8 round, QByteArray ext_key);
+    void subBytes(QByteArray *state);
+    void shiftRows(QByteArray *state);
+    void mixColumns(QByteArray *state);
 
+    QByteArray cipher(QByteArray &ext_key, const QByteArray &input);
+    QByteArray decipher(QByteArray &ext_key, const QByteArray &in);
 
     const quint8 sbox[256] = {
         // 0     1     2     3     4     5    6      7     8     9     A     B     C     D     E     F
@@ -70,6 +74,11 @@ private:
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
     };
 
+    quint8 getSboxValue(quint8 num)
+    {
+        return sbox[num];
+    }
+
     const quint8 rsbox[256] = {
         // 0     1     2     3     4     5    6      7     8     9     A     B     C     D     E     F
         0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
@@ -88,6 +97,16 @@ private:
         0x60, 0x51, 0x7f, 0xa9, 0x19, 0xb5, 0x4a, 0x0d, 0x2d, 0xe5, 0x7a, 0x9f, 0x93, 0xc9, 0x9c, 0xef,
         0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61,
         0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d
+    };
+
+    quint8 getRsboxValue(quint8 num)
+    {
+        return rsbox[num];
+    }
+
+    const quint8 Rcon[14] = {
+        0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20,
+        0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab
     };
 };
 

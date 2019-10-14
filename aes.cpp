@@ -52,12 +52,12 @@ QByteArray CuteAES::encrypt(QByteArray &text, QByteArray &key, const QByteArray 
 
     QByteArray ret;
     QByteArray expanded_key = expandKey(key);
-    QByteArray aligned_text = alignText(text);
+    alignText(text);
 
     switch (crypt_mode) {
         case (ECB_MODE):
-            for (int i = 0; i < aligned_text.size(); i += blocklen)
-                ret.append(cipher(expanded_key, aligned_text.mid(i, blocklen)));
+            for (int i = 0; i < text.size(); i += blocklen)
+                ret.append(cipher(expanded_key, text.mid(i, blocklen)));
 
             break;
 
@@ -92,20 +92,143 @@ QByteArray CuteAES::decrypt(QByteArray &text, QByteArray &key, const QByteArray 
 
 QByteArray CuteAES::expandKey(QByteArray &key)
 {
-    return nullptr;
+    quint8 temp[4];
+    QByteArray roundKey(key);
+
+    for (int i = aes_info.nk; i < nb * (aes_info.nr + 1); i++) {
+        for (int j = 0; j < 4; j++) {
+            temp[j] = static_cast<quint8>(roundKey[(i - 1) * 4 + j]);
+        }
+
+        if (i % aes_info.nk) {
+            quint8 local = temp[0];
+
+            // Rotate word
+            temp[0] = temp[1];
+            temp[1] = temp[2];
+            temp[2] = temp[3];
+            temp[3] = local;
+
+            // Substitute word
+            for (int j = 0; j < 4; j++) {
+                temp[j] = getSboxValue(temp[j]);
+            }
+
+            temp[0] ^= Rcon[i / aes_info.nk];
+        }
+
+        for (int j = 0; j < 4; j++) {
+            roundKey.append(i * 4 + j, static_cast<qint8>(
+                roundKey[(i - aes_info.nk) * 4 + j] ^ temp[j])
+            );
+        }
+    }
+
+    return roundKey;
 }
 
-QByteArray CuteAES::alignText(QByteArray &text)
+void CuteAES::alignText(QByteArray &text)
 {
-    return nullptr;
+    int size = (blocklen - text.size() % blocklen) % blocklen;
+    text.append(QByteArray(size, 0));
 }
 
-QByteArray CuteAES::cipher(QByteArray &ext_key, const QByteArray &in)
+QByteArray CuteAES::cipher(QByteArray &ext_key, const QByteArray &input)
 {
-    return nullptr;
+    QByteArray output(input);
+
+    addRoundKey(&output, 0, ext_key);
+
+    for (quint8 round = 1; round < aes_info.nr; round++) {
+        subBytes(&output);
+        shiftRows(&output);
+        mixColumns(&output);
+        addRoundKey(&output, round, ext_key);
+    }
+
+    subBytes(&output);
+    shiftRows(&output);
+    addRoundKey(&output, aes_info.nr, ext_key);
+
+    return output;
 }
 
 QByteArray CuteAES::decipher(QByteArray &ext_key, const QByteArray &in)
 {
     return nullptr;
+}
+
+void CuteAES::addRoundKey(QByteArray *state, quint8 round, QByteArray ext_key)
+{
+    QByteArray::iterator iter = state->begin();
+
+    for (int i = 0; i < 16; i++) {
+        iter[i] = static_cast<qint8>(iter[i]) ^ static_cast<qint8>(ext_key[
+            round * nb * 4 + (i / 4) * nb + (i % 4)
+        ]);
+    }
+}
+
+void CuteAES::subBytes(QByteArray *state)
+{
+    QByteArray::iterator iter = state->begin();
+
+    for (int i = 0; i < 16; i++) {
+        iter[i] = static_cast<qint8>(getSboxValue(
+            static_cast<quint8>(iter[i])
+        ));
+    }
+}
+
+void CuteAES::shiftRows(QByteArray *state)
+{
+    QByteArray::iterator iter = state->begin();
+    qint8 temp;
+
+    temp     = iter[1];
+    iter[1]  = iter[5];
+    iter[5]  = iter[9];
+    iter[9]  = iter[13];
+    iter[13] = temp;
+
+    temp     = iter[2];
+    iter[2]  = iter[10];
+    iter[10] = temp;
+
+    temp     = iter[6];
+    iter[6]  = iter[14];
+    iter[14] = temp;
+
+    temp     = iter[3];
+    iter[3]  = iter[15];
+    iter[15] = iter[11];
+    iter[11] = iter[7];
+    iter[7]  = temp;
+}
+
+inline qint8 xTime(qint8 x){
+    return static_cast<qint8>((x<<1) ^ (((x>>7) & 1) * 0x1b));
+}
+
+void CuteAES::mixColumns(QByteArray *state)
+{
+    QByteArray::iterator iter = state->begin();
+    qint8 temp[3];
+
+    for (int i = 0; i < 16; i += 4) {
+        temp[0] = iter[i];
+        temp[1] = iter[i] ^ iter[i+1] ^ iter[i+2] ^ iter[i+3];
+
+        temp[2] = xTime(iter[i] ^ iter[i+1]);
+        iter[i] = iter[i] ^ temp[2] ^ temp[1];
+
+        temp[2] = xTime(iter[i+1] ^ iter[i+2]);
+        iter[i+1] = iter[i+1] ^ temp[2] ^ temp[1];
+
+        temp[2] = xTime(iter[i+2] ^ iter[i+3]);
+        iter[i+2] = iter[i+2] ^ temp[2] ^ temp[1];
+
+        temp[2] = xTime(iter[i+3] ^ temp[0]);
+        iter[i+3] = iter[i+3] ^ temp[2] ^ temp[1];
+    }
 }
