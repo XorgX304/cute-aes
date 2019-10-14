@@ -32,3 +32,25 @@ CuteAES::CuteAES(aes_mode_t _aes_mode, crypt_mode_t _crypt_mode)
             throw("Unknown AES mode!");
     }
 }
+
+QByteArray CuteAES::Encrypt(QByteArray &text, QByteArray &key)
+{
+    CuteAES aes(AES_128_MODE, ECB_MODE);
+    return aes.encrypt(text, key);
+}
+
+QByteArray CuteAES::Decrypt(QByteArray &text, QByteArray &key)
+{
+    CuteAES aes(AES_128_MODE, ECB_MODE);
+    return aes.decrypt(text, key);
+}
+
+QByteArray CuteAES::encrypt(QByteArray &text, QByteArray &key)
+{
+    return nullptr;
+}
+
+QByteArray CuteAES::decrypt(QByteArray &text, QByteArray &key)
+{
+    return nullptr;
+}
