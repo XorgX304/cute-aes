@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-class aes : public QObject
+class CuteAES : public QObject
 {
     Q_OBJECT
 
