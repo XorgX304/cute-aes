@@ -206,7 +206,29 @@ void CuteAES::shiftRows(QByteArray *state)
     iter[7]  = temp;
 }
 
+inline qint8 xTime(qint8 x){
+    return static_cast<qint8>((x<<1) ^ (((x>>7) & 1) * 0x1b));
+}
+
 void CuteAES::mixColumns(QByteArray *state)
 {
-    return;
+    QByteArray::iterator iter = state->begin();
+    qint8 temp[3];
+
+    for (int i = 0; i < 16; i += 4) {
+        temp[0] = iter[i];
+        temp[1] = iter[i] ^ iter[i+1] ^ iter[i+2] ^ iter[i+3];
+
+        temp[2] = xTime(iter[i] ^ iter[i+1]);
+        iter[i] = iter[i] ^ temp[2] ^ temp[1];
+
+        temp[2] = xTime(iter[i+1] ^ iter[i+2]);
+        iter[i+1] = iter[i+1] ^ temp[2] ^ temp[1];
+
+        temp[2] = xTime(iter[i+2] ^ iter[i+3]);
+        iter[i+2] = iter[i+2] ^ temp[2] ^ temp[1];
+
+        temp[2] = xTime(iter[i+3] ^ temp[0]);
+        iter[i+3] = iter[i+3] ^ temp[2] ^ temp[1];
+    }
 }
