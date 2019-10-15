@@ -5,16 +5,9 @@
 
 class CuteAES : public QObject
 {
-private:
-    const quint8 nb = 4;  // Number of blocks in an AES block
-    const quint8 blocklen = 16;  // Block length
+    Q_OBJECT
 
-    typedef struct {
-        quint8 nr;  // Encryption round quantity
-        quint8 nk;  // Key length in 32-bit words
-        quint16 key_length;  // Key length in bits
-    } aes_info_t;
-
+public:
     typedef enum {
         AES_128_MODE,
         AES_192_MODE,
@@ -28,15 +21,21 @@ private:
         OFB_MODE
     } crypt_mode_t;
 
-public:
-    Q_OBJECT
-
     CuteAES(aes_mode_t _aes_mode, crypt_mode_t _crypt_mode);
 
     static QByteArray Encrypt(QByteArray &text, QByteArray &key);
     static QByteArray Decrypt(QByteArray &text, QByteArray &key);
 
 private:
+    const quint8 nb = 4;  // Number of blocks in an AES block
+    const quint8 blocklen = 16;  // Block length
+
+    typedef struct {
+        quint8 nr;  // Encryption round quantity
+        quint8 nk;  // Key length in 32-bit words
+        quint16 key_length;  // Key length in bits
+    } aes_info_t;
+
     aes_info_t aes_info;
     aes_mode_t aes_mode;
     crypt_mode_t crypt_mode;
