@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Реализация AES</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -20,7 +20,7 @@
       <item>
        <widget class="QTabWidget" name="InputWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="EncryptTab">
          <attribute name="title">
@@ -118,7 +118,7 @@
               <item>
                <widget class="QPushButton" name="decryptButton">
                 <property name="text">
-                 <string>Зашифровать</string>
+                 <string>Расшифровать</string>
                 </property>
                </widget>
               </item>
@@ -184,10 +184,16 @@
     <property name="title">
      <string>Файл</string>
     </property>
+    <addaction name="ExitAction"/>
    </widget>
    <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="ExitAction">
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
