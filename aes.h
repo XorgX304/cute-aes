@@ -26,6 +26,9 @@ public:
     static QByteArray Encrypt(QByteArray &text, QByteArray &key);
     static QByteArray Decrypt(QByteArray &text, QByteArray &key);
 
+    QByteArray encrypt(QByteArray &text, QByteArray &key, const QByteArray &iv);
+    QByteArray decrypt(QByteArray &text, QByteArray &key, const QByteArray &iv);
+
 private:
     const quint8 nb = 4;  // Number of blocks in an AES block
     const quint8 blocklen = 16;  // Block length
@@ -39,9 +42,6 @@ private:
     aes_info_t aes_info;
     aes_mode_t aes_mode;
     crypt_mode_t crypt_mode;
-
-    QByteArray encrypt(QByteArray &text, QByteArray &key, const QByteArray &iv);
-    QByteArray decrypt(QByteArray &text, QByteArray &key, const QByteArray &iv);
 
     QByteArray expandKey(QByteArray &key);
     void alignText(QByteArray &text);
