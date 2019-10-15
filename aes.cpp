@@ -79,7 +79,7 @@ QByteArray CuteAES::decrypt(QByteArray &text, QByteArray &key, const QByteArray 
     switch (crypt_mode) {
         case (ECB_MODE):
             for (int i = 0; i < text.size(); i += blocklen)
-                ret.append(cipher(expanded_key, text.mid(i, blocklen)));
+                ret.append(decipher(expanded_key, text.mid(i, blocklen)));
 
             break;
 
@@ -285,7 +285,7 @@ void CuteAES::mixColumns(QByteArray *state)
     }
 }
 
-inline qint8 multiply(qint8 x, qint8 y){
+inline qint8 multiply(qint8 x, qint8 y) {
     return (((y    & 1) * x) ^
             ((y>>1 & 1) * xTime(x)) ^
             ((y>>2 & 1) * xTime(xTime(x))) ^
