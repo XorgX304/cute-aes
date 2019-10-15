@@ -251,14 +251,14 @@ void CuteAES::invShiftRows(QByteArray *state)
     iter[14] = iter[6];
     iter[6]  = temp;
 
-    temp     = iter[15];
-    iter[15] = iter[3];
-    iter[3]  = iter[7];
+    temp     = iter[7];
     iter[7]  = iter[11];
-    iter[11] = temp;
+    iter[11] = iter[15];
+    iter[15] = iter[3];
+    iter[3]  = temp;
 }
 
-inline qint8 xTime(qint8 x){
+inline qint8 xTime(qint8 x) {
     return static_cast<qint8>((x<<1) ^ (((x>>7) & 1) * 0x1b));
 }
 
