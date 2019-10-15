@@ -48,8 +48,11 @@ private:
     void alignText(QByteArray &text);
     void addRoundKey(QByteArray *state, quint8 round, QByteArray ext_key);
     void subBytes(QByteArray *state);
+    void invSubBytes(QByteArray *state);
     void shiftRows(QByteArray *state);
+    void invShiftRows(QByteArray *state);
     void mixColumns(QByteArray *state);
+    void invMixColumns(QByteArray *state);
 
     QByteArray cipher(QByteArray &ext_key, const QByteArray &input);
     QByteArray decipher(QByteArray &ext_key, const QByteArray &in);
