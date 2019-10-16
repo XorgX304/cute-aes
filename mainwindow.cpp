@@ -3,6 +3,7 @@
 #include "aes.h"
 
 #include <QDebug>
+#include <QMessageBox>
 #include <QTextCodec>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -22,12 +23,38 @@ MainWindow::~MainWindow()
 void MainWindow::on_encryptButton_clicked()
 {
     QString text = ui->eTextEdit->toPlainText();
+    if (text.isEmpty()) {
+        QString title("Ошибка!");
+        QString description("Не введен открытый текст!");
+
+        QMessageBox::warning(this, title, description);
+
+        return;
+    }
+
     QString key = ui->eKeyEdit->toPlainText();
+    if (key.isEmpty()) {
+        QString title("Ошибка!");
+        QString description("Не введен ключ!");
+
+        QMessageBox::warning(this, title, description);
+
+        return;
+    }
 
     QByteArray text_bin = text.toUtf8();
     QByteArray key_bin = key.toUtf8();
 
     QByteArray encrypted = aes->encrypt(text_bin, key_bin, nullptr);
+
+    if (encrypted.isNull()) {
+        QString title("Ошибка!");
+        QString description("Не удалось зашифровать текст!");
+
+        QMessageBox::warning(this, title, description);
+
+        return;
+    }
 
     ui->RawTextBrowser->setText(encrypted.toHex());
     ui->UtfTextBrowser->setText(QTextCodec::codecForMib(1015)->toUnicode(encrypted));
@@ -40,7 +67,25 @@ void MainWindow::on_encryptButton_clicked()
 void MainWindow::on_decryptButton_clicked()
 {
     QString text = ui->dTextEdit->toPlainText();
+    if (text.isEmpty()) {
+        QString title("Ошибка!");
+        QString description("Не введен или не распознан шифротекст!");
+
+        QMessageBox::warning(this, title, description);
+
+        return;
+    }
+
+
     QString key = ui->dKeyEdit->toPlainText();
+    if (key.isEmpty()) {
+        QString title("Ошибка!");
+        QString description("Не введен ключ!");
+
+        QMessageBox::warning(this, title, description);
+
+        return;
+    }
 
     QByteArray text_bin;
     if (ui->dTextModeEdit->currentIndex() == 0) {
@@ -57,6 +102,14 @@ void MainWindow::on_decryptButton_clicked()
     QByteArray key_bin = key.toUtf8();
 
     QByteArray decrypted = aes->decrypt(text_bin, key_bin, nullptr);
+    if (decrypted.isNull()) {
+        QString title("Ошибка!");
+        QString description("Не удалось расшифровать текст!");
+
+        QMessageBox::warning(this, title, description);
+
+        return;
+    }
 
     ui->RawTextBrowser->setText(decrypted.toHex());
     ui->UtfTextBrowser->setText(QTextCodec::codecForMib(1015)->toUnicode(decrypted));
